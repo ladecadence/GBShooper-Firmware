@@ -9,6 +9,7 @@
 #define F_CPU			3686400UL 	/* 3.6864 MHz */
 #define __DELAY_BACKWARD_COMPATIBLE__
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <inttypes.h>
 #include <util/delay.h>
 #include "gbflasher.h"
@@ -18,13 +19,41 @@
 /******************************************************************************/
 
 uint8_t pkt_type, pkt_data = 0; // Bytes del protocolo
-uint8_t temp1, temp2 = 0;		  // Temporales para varias operaciones
-uint32_t temp_addr;			  // Dirección temporal para operaciones
+uint8_t temp1, temp2 = 0;		// Temporales para varias operaciones
+uint32_t temp_addr;			    // Dirección temporal para operaciones
 uint8_t buffer[BUFFER_SIZE];
+uint32_t segundos = 0;		    // 4294967296 segundos, 136 años!
+uint32_t ahora;		            // Guarda el segundo para timeouts
 
 /******************************************************************************/
 /***************************** FUNCIONES **************************************/
 /******************************************************************************/
+
+/******************************* TIMER ****************************************/
+/* Interrupción */
+ISR (TIMER1_OVF_vect)    // Timer1 ISR
+{
+	cli();
+	segundos++;
+	reti();
+}
+
+
+/* Inicia el timer */
+void timer_init()
+{
+	/* Empezamos en 0 */
+	TCNT1=0;
+	/* Interrupción de overflow activada */
+	TIMSK = (1<<TOIE1);
+	/* Valor de reset */
+	OCR1A = 3600; /* ~ 1s */
+	/* Modo CTC, 3.6864 Mhz preescaler = /1024 =~ 3600 Hz */
+	TCCR1B = (1<<WGM12) | (1<<CS12) | (1<<CS10);	
+	/* Activamos interrupciones */
+	sei();	
+}
+
 
 /******************************** UART ****************************************/
 /* Inicia el uart */
@@ -414,6 +443,9 @@ void smsf_status_ok(void) {
 
 /* Configura los puertos y los perifericos */
 void smsf_init(void) {
+
+	/* TIMER */
+    timer_init();
 
 	/* UART */
 	uart_init(BAUDRATE_230400);

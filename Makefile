@@ -116,12 +116,12 @@ OPTLEVEL=2
 # one of the valid "-c PROGRAMMER-ID" values 
 # described in the avrdude info page.
 # 
-AVRDUDE_PROGRAMMERID=avrisp2
+AVRDUDE_PROGRAMMERID=arduino
 
 # port--serial or parallel port to which your 
 # hardware programmer is attached
 #
-AVRDUDE_PORT=/dev/ttyUSB0
+AVRDUDE_PORT=/dev/ttyACM0 -b19200
 
 
 ####################################################
@@ -170,7 +170,7 @@ LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU) \
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 OBJDUMP=avr-objdump
-SIZE=avr-size
+SIZE=avr-size --mcu $(MCU) -C
 AVRDUDE=avrdude
 REMOVE=rm -f
 

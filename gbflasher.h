@@ -79,14 +79,15 @@
 #define _CE				5
 #define _OE				4
 #define _WE				3
+#define _ALT_WE         7
 #define RESET			PORTD &= ~(1<<_RESET)
 #define NOT_RESET		PORTD |= (1<<_RESET)
 #define CHIP_ENABLE		PORTD &= ~(1<<_CE)
 #define CHIP_DISABLE	PORTD |= (1<<_CE)
 #define OUTPUT_ENABLE	PORTD &= ~(1<<_OE)
 #define	OUTPUT_DISABLE	PORTD |= (1<<_OE)
-#define WRITE_ENABLE	PORTD &= ~(1<<_WE)
-#define WRITE_DISABLE	PORTD |= (1<<_WE)
+#define WRITE_ENABLE	PORTD &= ~(1<<_WE) ; PORTD &= ~(1<<_ALT_WE)
+#define WRITE_DISABLE	PORTD |= (1<<_WE) ; PORTD |= (1<<_ALT_WE)
 
 /* Modos de control */
 #define READ_MODE		FLASH_ENABLE; CHIP_DISABLE; OUTPUT_ENABLE; WRITE_DISABLE
@@ -94,8 +95,8 @@
 
 /* LED de status */
 #define	STATUS			2
-#define STATUS_ON		PORTD &= ~(1<<STATUS)
-#define STATUS_OFF		PORTD |= (1<<STATUS)
+#define STATUS_OFF		PORTD &= ~(1<<STATUS)
+#define STATUS_ON		PORTD |= (1<<STATUS)
 
 /* valores para XTAL de 3.6864 MHz */
 #define BAUDRATE_230400 0
@@ -103,9 +104,24 @@
 #define BAUDRATE_19200	11
 #define BAUDRATE_9600	23
 
+/* XTAL de 7.3728 MHz */
+/*
+#define BAUDRATE_460800 0
+#define BAUDRATE_230400	1
+#define BAUDRATE_19200  23
+#define BAUDRATE_9600	47
+*/
+
 /* utilidades */
 #define ZERO_TEMP		temp1=0; temp2=0	   /* pone a cero las temporales */
 #define ZERO_PKT		pkt_type=0; pkt_data=0 /* ^-- etc... */
+
+
+
+
+/******************************** TIMER ***************************************/
+/* Inicia el timer */
+void timer_init(void);
 
 /******************************** UART ****************************************/
 /* Inicia el uart */

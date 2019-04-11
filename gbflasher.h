@@ -46,6 +46,7 @@
 #define CMD_ERASE_FLASH	0x66
 #define CMD_ERASE_RAM	0x77
 #define CMD_READ_HEADER	0x88
+#define CMD_ERR			0xEE
 #define CMD_END			0xFF
 
 /* Puertos */

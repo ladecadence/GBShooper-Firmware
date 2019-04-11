@@ -283,9 +283,14 @@ uint8_t flash_erase(void) {
 
 
 	/* Checkeamos D7 para ver si ha terminado el borrado */
+	ahora = segundos;
 	while(!(GET_DATA&BIT7)) {
 		//if (GET_DATA&BIT5)			/* Si D5 es 1, ERROR */
 		//	return STAT_ERROR;
+	
+		// 5s timeout
+		if (segundos > ahora + 5)
+			return STAT_ERROR;
 	}
 	return STAT_OK;
 }
@@ -645,6 +650,12 @@ uint8_t smsf_flash_write(void) {
 		smsf_send_packet(PKT_DATA, check);
 		/* recibimos la respuesta, ¿seguimos grabando? */
 		smsf_receive_packet();
+		if (pkt_type == PKT_COMMAND && pkt_data == CMD_ERR) {
+			STATUS_OFF;
+			smsf_status_error();
+			return STAT_ERROR;
+		}
+
 	}
 
 	STATUS_OFF;
